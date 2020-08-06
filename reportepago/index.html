@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, scalable=yes"> -->
+		<title>Grupo Reto</title>
+		<link rel="shortcut icon" href="../favicon.jpg" />
+		<link rel="stylesheet" href="../css/index.css">
+		<script type="text/javascript" src="../js/funciones.js"></script>
+	</head>
+	<body onload="inicio()">
+		<div id="container">
+			<div class="logo" align="center">
+				<img id="logo" src="../img/gruporeto.jpg" alt="" />
+			</div>
+         <h2 align="center">Reporte de pago</h2>
+			<h3 id="mensaje" align="center"></h3>
+			<div id="div1" align="center">
+
+				<div id="div2" class="cmps">
+					<span class="etiq">Correo electrónico:</span>
+					<input id="email" class="campo" type="email" size="50" maxlength="100" title="Debe introducir un formato de email válido (incluir el @ y al menos un . )" />
+				</div>
+
+				<div id="div2" class="cmps">
+					<span class="etiq">Nombre:</span>
+					<input id="cliente" class="campo" type="text" size="50" maxlength="100" />
+				</div>
+
+				<div id="div2" class="cmps">
+					<span class="etiq">Concepto del pago:</span>
+					<select id="concepto" class="campo">
+						<option value="seleccione" selected>Seleccione</option>
+						<!-- <option value="banco">Transferencia</option> -->
+					</select>
+				</div>
+
+				<div id="div2" class="cmps">
+					<span class="etiq">Tipo de pago:</span>
+					<select id="tipopago" class="campo" onchange="cambiaetq()">
+						<option value="zelle" selected>Zelle</option>
+						<!-- <option value="banco">Transferencia</option> -->
+					</select>
+				</div>
+				<script type="text/javascript">
+					function cambiaetq() {
+						etqorigen.innerHTML = (tipopago.value=="banco") ? "Banco de origen" : "Titular de la cuenta" ;
+					}
+				</script>
+
+				<div id="div2" class="cmps">
+					<span id="etqorigen" class="etiq">Titular de la cuenta</span>
+					<input id="origenpago" class="campo" type="text" size="50" maxlength="100" />
+				</div>
+
+				<div id="div2" class="cmps">
+					<span class="etiq">Fecha del pago:</span>
+					<input id="fechapago" class="campo" type="date" size="10" />
+					<script>
+						let f = new Date(), yy, m, mm, d, dd;
+						yy = f.getFullYear();
+						m = f.getMonth();
+						m++;
+						if (m<10) { mm = "0"+m; } else { mm = m; }
+						d = f.getDate();
+						if (d<10) { dd = "0"+d; } else { dd = d; }
+
+						document.getElementById("fechapago").min   = "2020-01-01";
+						document.getElementById("fechapago").max   = yy+"-"+mm+"-"+dd;
+					</script>
+				</div>
+
+				<div id="div2" class="cmps">
+					<span class="etiq">Ref. operación:</span>
+					<input id="referenciapago" class="campo" type="text" size="50" maxlength="100" />
+				</div>
+
+				<div class="cmps">
+					<span class="etiq">Monto de la transacción:</span>
+					<input id="montopago" class="campo" type="text" size="50" maxlength="100" style="text-align: right;" />
+				</div>
+				<!-- Linea de botones -->
+				<div class="btns">
+					<button id="btnenviar" onclick="enviar()" style="width: 7em;">Enviar</button>
+					<button id="limpiar" onclick="limpiar()" style="width: 7em;">Limpiar</button>
+				</div>
+			</div>
+      </div>
+		<div align="right" style="width: 100%; position: fixed; padding-bottom: 0.25em; bottom: 0">
+			<pie style="font-size: 80%; margin-right: 1em;">
+				Desarrollado por <a href="https://www.sgc-consultores.com.ve"><b>SGC Consultores C.A.</b><img src="../img/sgc_icon.png" style="width: 1.5em;" alt="SGC Consultores C.A." title="SGC Consultores C.A." /></a>
+			</pie>
+		</div>
+		<script>
+			let cliente="", email = "", concepto="", origen="", fecha="", referencia="", monto="", datos = new FormData();
+
+			function inicio() {
+				limpiar();
+
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						respuesta = JSON.parse(this.responseText);
+						for (let i = 0; i < respuesta.length; i++) {
+							txtconcepto = document.createTextNode(respuesta[i].concepto);
+							opc = document.createElement('option');
+							opc.appendChild(txtconcepto);
+							xVal = respuesta[i].concepto.replace(" ","_");
+							opc.value = xVal;
+							document.getElementById('concepto').appendChild(opc);
+						}
+					}
+				};
+				xmlhttp.open("GET", "../php/buscaconceptos.php", false);
+				xmlhttp.send();
+			}
+
+			// limpia el formulario
+			function limpiar() {
+				email = "";
+				cliente = "";
+				concepto = "";
+				origen = "";
+				fecha = "";
+				referencia = "";
+				monto = "";
+				document.getElementById("email").value = "";
+				document.getElementById("cliente").value = "";
+				document.getElementById("concepto").value = "seleccione";
+				document.getElementById("tipopago").value = "zelle";
+				document.getElementById("origenpago").value = "";
+				document.getElementById("fechapago").value = document.getElementById("fechapago").max;
+				document.getElementById("referenciapago").value = "";
+				document.getElementById("montopago").value = "";
+
+				document.getElementById("email").focus();
+			}
+
+			// valida la entrada de los datos de la orden
+			function validaciones() {
+				var continuar = true, vacios = 0, campo = "";
+				if (document.getElementById("email").value=="" || document.getElementById("email").value==undefined) {
+					alert("El campo correo electrónico no puede quedar en blanco");
+					vacios++;
+					campo = "email";
+					continuar = false;
+				}
+				if ((document.getElementById("cliente").value=="" || document.getElementById("cliente").value==undefined) && vacios == 0) {
+					alert("El campo nombre no puede quedar en blanco");
+					vacios++;
+					campo = "cliente";
+				}
+				if ((document.getElementById("concepto").value=="seleccione") && vacios == 0) {
+					alert("Debe seleccionar un concepto");
+					vacios++;
+					campo = "concepto";
+				}
+				if ((document.getElementById("origenpago").value=="" || document.getElementById("origenpago").value==undefined) && vacios == 0) {
+					alert("El campo origen de la transacción no puede quedar en blanco");
+					vacios++;
+					campo = "origenpago";
+				}
+				if ((document.getElementById("fechapago").value=="" || document.getElementById("fechapago").value==undefined) && vacios == 0) {
+					alert("El campo fecha de la transacción no puede quedar en blanco");
+					vacios++;
+					campo = "fechapago";
+				} else {
+					if(document.getElementById("fechapago").value>document.getElementById("fechapago").max) {
+						alert("La fecha no puede ser mayor al día de hoy");
+						vacios++;
+						campo = "fechapago";
+					}
+				}
+				if ((document.getElementById("referenciapago").value=="" || document.getElementById("referenciapago").value==undefined) && vacios == 0) {
+					alert("El campo referencia no puede quedar en blanco");
+					vacios++;
+					campo = "referenciapago";
+				}
+				if ((document.getElementById("montopago").value=="" || document.getElementById("montopago").value==undefined) && vacios == 0) {
+					alert("El campo monto de la transacción no puede quedar en blanco");
+					vacios++;
+					campo = "montopago";
+				}
+				if (vacios>0) { continuar = false; }
+				if (continuar) {
+					email = document.getElementById("email").value;
+					cliente = document.getElementById("cliente").value;
+					xVal = document.getElementById("concepto").value.replace("_"," ");
+					concepto = xVal;
+					// concepto = document.getElementById("concepto").value;
+					tipo = (tipopago.value=="banco") ? "Banco de origen: " : "Titular de zelle: " ;
+					origen = tipo+document.getElementById("origenpago").value;
+					fecha = document.getElementById("fechapago").value;
+					referencia = document.getElementById("referenciapago").value;
+					monto = document.getElementById("montopago").value;
+				} else {
+					document.getElementById(campo).focus();
+				}
+				return continuar;
+			}
+
+			function enviar() {
+				if (validaciones()) {
+					datos.append("email", email);
+					datos.append("cliente", cliente);
+					datos.append("concepto", concepto);
+					datos.append("origen", origen);
+					datos.append("fecha", fecha);
+					datos.append("referencia", referencia);
+					datos.append("monto", monto);
+
+					var xmlhttp = new XMLHttpRequest();
+					xmlhttp.onreadystatechange = function() {
+						console.log('readystate '+this.readyState);
+						console.log('status '+this.status);
+						if (this.readyState == 4 && this.status == 200) {
+							respuesta = JSON.parse(this.responseText);
+							if (respuesta.exito == 'SI') {
+								alert(respuesta.mensaje);
+						        window.open("./TransferSent.html", "_self");
+							} else {
+								alert(respuesta.mensaje);
+							}
+						}
+					};
+					xmlhttp.open("POST", "../php/registrapago.php", false);
+					xmlhttp.send(datos);
+				}
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, scalable=yes"> -->
+		<title>Grupo Reto</title>
+		<link rel="shortcut icon" href="./favicon.jpg" />
+		<link rel="stylesheet" href="./css/index.css">
+		<script type="text/javascript" src="js/funciones.js"></script>
+	</head>
+	<body onload="inicio()">
+		<div id="container">
+			<div class="logo" align="center">
+				<img id="logo" src="./img/gruporeto.jpg" alt="" />
+			</div>
+			<h2 align="center">Ingreso a la aplicación</h2>
+			<div id="div1" align="center">
+				<h3>Autenticación</h3>
+				<div id="div0" class="cmps">
+					<span class="etiq">Correo electrónico:</span>
+					<input id="email" class="campo" type="email" size="50" maxlength="100" title="Debe introducir un formato de email válido (incluir el @ y al menos un . )" />
+				</div>
+				<div id="div6" class="cmps">
+					<span class="etiq">Nombre:</span>
+					<input id="nombre" class="campo" type="text" size="50" maxlength="100" />
+				</div>
+				<div id="div2" class="cmps">
+					<span class="etiq">Password:</span>
+					<input id="clave" class="campo" type="password" size="50" maxlength="100" onchange="compara1()" />
+				</div>
+				<div id="div3" class="cmps">
+					<span class="etiq">Confirmar password:</span>
+					<input id="confirmacion" class="campo" type="password" size="50" maxlength="100" onchange="compara2()" />
+				</div>
+				<div id="div4" class="cmps">
+					<span class="etiq">Pregunta de seguridad:</span>
+					<input id="question" class="campo" type="text" size="50" maxlength="100" />
+				</div>
+				<div id="div5" class="cmps">
+					<span id="txtpregunta" class="etiq">Respuesta a la pregunta</span>
+					<input id="answer" class="campo" type="password" size="50" maxlength="100" />
+				</div>
+				<!-- Linea de botones -->
+				<div align="center">
+					<button id="norecuerda" onclick="pregunta()" style="width: 10em; margin: 0.5em 0 0 0;">Olvidé mi password</button>
+				</div>
+				<div class="btns">
+					<button id="buscar" onclick="buscar()" style="width: 7em;">Buscar</button>
+					<button id="login" onclick="login()" style="width: 7em;">Ingresar</button>
+					<button id="registro" onclick="registro()" style="width: 7em;">Registrar</button>
+					<button id="olvido" onclick="recuperar()" style="width: 7em;">Recuperar</button>
+					<button id="cambiapass" onclick="restablecer()" style="width: 7em;">Restablecer</button>
+					<button id="limpiar" onclick="limpiar()" style="width: 7em;">Limpiar</button>
+				</div>
+			</div>
+		</div>
+		<div align="right" style="width: 100%; position: fixed; padding-bottom: 0.25em; bottom: 0">
+			<pie style="font-size: 80%; margin-right: 1em;">
+				Desarrollado por <a href="https://www.sgc-consultores.com.ve"><b>SGC Consultores C.A.</b><img src="./img/sgc_icon.png" style="width: 1.5em;" alt="SGC Consultores C.A." title="SGC Consultores C.A." /></a>
+			</pie>
+		</div>
+		<script>
+			var respuesta, usuario, nombre, idusuario;
+
+			function inicio() {
+				clave = "";
+				confirmacion = "";
+				question = "";
+				answer = "";
+				document.getElementById("nombre").value = "";
+				document.getElementById("clave").value = "";
+				document.getElementById("confirmacion").value = "";
+				document.getElementById("question").value = "";
+				document.getElementById("answer").value = "";
+				document.getElementById("answer").style.background = "";
+				document.getElementById("div6").style.display = 'none';
+				document.getElementById("div2").style.display = 'none';
+				document.getElementById("div3").style.display = 'none';
+				document.getElementById("div4").style.display = 'none';
+				document.getElementById("div5").style.display = 'none';
+				document.getElementById("txtpregunta").innerHTML = 'Respuesta a la pregunta';
+				document.getElementById("norecuerda").style.display = 'none';
+				document.getElementById("buscar").style.display = 'inline-block';
+				document.getElementById("login").style.display = 'none';
+				document.getElementById("registro").style.display = 'none';
+				document.getElementById("olvido").style.display = 'none';
+				document.getElementById("cambiapass").style.display = 'none';
+			}
+
+			function buscar() {
+				if (document.getElementById("email").value!="") {
+					valor = document.getElementById("email").value;
+					document.getElementById("email").disabled = true;
+					arroba = 0;
+					punto = 0;
+					posa = 0;
+					posp = 0;
+					for (index = 0; index < valor.length; index++) {
+						if (valor[index] == "@") { arroba++; posa = index; }
+						if (valor[index] == ".") { punto++; posp = index; }
+					}
+					if (arroba + punto > 1 && posp > posa) {
+						var xmlhttp = new XMLHttpRequest();
+						xmlhttp.onreadystatechange = function () {
+							if (this.readyState == 4 && this.status == 200) {
+								respuesta = JSON.parse(this.responseText);
+								if (respuesta.exito == 'SI') {
+									if (respuesta.status) {
+										nombre = respuesta.usuario;
+										idusuario = respuesta.id;
+										document.getElementById("div2").style.display = 'flex';
+										document.getElementById("norecuerda").style.display = 'inline-block';
+										document.getElementById("buscar").style.display = 'none';
+										document.getElementById("login").style.display = 'inline-block';
+										document.getElementById("registro").style.display = 'none';
+										document.getElementById("olvido").style.display = 'none';
+									} else {
+										alert('Usuario inactivo, comuniquese con el supervisor.');
+									}
+								} else {
+									document.getElementById("div6").style.display = 'flex';
+									document.getElementById("div2").style.display = 'flex';
+									document.getElementById("div3").style.display = 'flex';
+									document.getElementById("div4").style.display = 'flex';
+									document.getElementById("div5").style.display = 'flex';
+									document.getElementById("buscar").style.display = 'none';
+									document.getElementById("login").style.display = 'none';
+									document.getElementById("registro").style.display = 'inline-block';
+									document.getElementById("olvido").style.display = 'none';
+								}
+							}
+						};
+						xmlhttp.open("GET", "./php/buscausuarios.php?email="+valor, false);
+						xmlhttp.send();
+					} else {
+						document.getElementById("email").focus();
+					}
+				} else {
+					alert('El correo electrónico no se puede dejar en blanco.');
+            }
+			}
+
+			function login() {
+				usuario = document.getElementById("email").value;
+				clave = document.getElementById("clave").value.toLowerCase();
+				hashp = SHA256(clave.trim());
+				if (respuesta.hashp==hashp) {
+					localStorage.setItem("usuario",   usuario);
+					localStorage.setItem("nombre",    nombre);
+					localStorage.setItem("idusuario", idusuario);
+					window.location.replace("./confirmapago");
+				} else {
+					alert('Password no valido');
+					document.getElementById("clave").focus();
+            }
+			}
+
+			function registro() {
+				if (compara1()) {
+					if (validaciones(2)) {
+						usuario = document.getElementById("email").value;
+						nombre  = document.getElementById("nombre").value;
+						clave = document.getElementById("clave").value.toLowerCase();
+						question = document.getElementById("question").value;
+						answer = document.getElementById("answer").value.toLowerCase();
+
+						hashp = SHA256(clave.trim());
+						hashr = SHA256(answer.trim());
+
+						datos = new FormData();
+						datos.append("email",    usuario);
+						datos.append("usuario",  nombre);
+						datos.append("question", question);
+						datos.append("hashp",    hashp);
+						datos.append("hashr",    hashr);
+						datos.append("status",   true);
+
+						var xmlhttp = new XMLHttpRequest();
+						xmlhttp.onreadystatechange = function () {
+							if (this.readyState == 4 && this.status == 200) {
+								respuesta = JSON.parse(this.responseText);
+								if (respuesta.exito == 'SI') {
+									alert(respuesta.mensaje);
+									limpiar();
+								} else {
+									alert('Falló el registro.\nInténtelo de nuevo\nSi persiste el fallo comuniquese al +58-424-407.1820');
+									document.getElementById("clave").focus();
+								}
+							}
+						};
+						xmlhttp.open("POST", "./php/registrausuario.php", false);
+						xmlhttp.send(datos);
+					}
+            }
+			}
+
+			function recuperar() {
+				usuario = document.getElementById("email").value;
+				answer = document.getElementById("answer").value.toLowerCase();
+				hashr = SHA256(answer.trim());
+				if (respuesta.hashr==hashr) {
+					clave = "";
+					confirmacion = "";
+					document.getElementById("clave").value = "";
+					document.getElementById("confirmacion").value = "";
+					document.getElementById("div2").style.display = 'flex';
+					document.getElementById("div3").style.display = 'flex';
+					document.getElementById("div4").style.display = 'none';
+					document.getElementById("div5").style.display = 'none';
+					document.getElementById("olvido").style.display = 'none';
+					document.getElementById("cambiapass").style.display = 'inline-block';
+				} else {
+					alert("La respuesta no es correcta")
+					document.getElementById("answer").focus();
+            }
+			}
+
+			function restablecer() {
+				usuario = document.getElementById("email").value;
+				clave = document.getElementById("clave").value.toLowerCase();
+				confirmacion = document.getElementById("confirmacion").value.toLowerCase();
+				if (clave==confirmacion) {
+					hashp = SHA256(clave.trim());
+
+					datos = new FormData();
+					datos.append("email", usuario);
+					datos.append("hashp", hashp);
+
+					var xmlhttp = new XMLHttpRequest();
+					xmlhttp.onreadystatechange = function () {
+						if (this.readyState == 4 && this.status == 200) {
+							respuesta = JSON.parse(this.responseText);
+							if (respuesta.exito == 'SI') {
+								alert(respuesta.mensaje);
+								limpiar();
+							} else {
+								alert('Falló el proceso.\nInténtelo de nuevo\nSi persiste el fallo comuniquese al +58-424-407.1820');
+								document.getElementById("clave").focus();
+							}
+						}
+					};
+					xmlhttp.open("POST", "./php/recuperausuario.php", false);
+					xmlhttp.send(datos);
+				} else {
+					alert("el password no coincide")
+					document.getElementById("clave").focus();
+            }
+			}
+
+			function compara1() {
+				clave = document.getElementById("clave").value;
+				confirmacion = document.getElementById("confirmacion").value;
+				if (confirmacion != "") {
+					if (clave == confirmacion) {
+						return true;
+					} else {
+						alert("El password no coincide.");
+						document.getElementById("clave").focus();
+					}
+            }
+			}
+
+			function compara2() {
+				clave = document.getElementById("clave").value;
+				confirmacion = document.getElementById("confirmacion").value;
+				if (clave == confirmacion) {
+					return true;
+				} else {
+					alert("El password no coincide.");
+					document.getElementById("confirmacion").focus();
+            }
+			}
+
+			function pregunta() {
+				document.getElementById("div2").style.display = 'none';
+				document.getElementById("txtpregunta").innerHTML = respuesta.pregunta;
+				document.getElementById("div5").style.display = 'flex';
+				document.getElementById("answer").style.background = "lightcoral";
+				document.getElementById("norecuerda").style.display = 'none';
+				document.getElementById("buscar").style.display = 'none';
+				document.getElementById("login").style.display = 'none';
+				document.getElementById("registro").style.display = 'none';
+            document.getElementById("olvido").style.display = 'inline-block';
+			}
+
+			function validaciones(opcion) {
+				var continuar = true, vacios = 0, campo = "";
+				if (document.getElementById("email").value=="" || document.getElementById("email").value==undefined) {
+					alert("El campo correo electrónico no puede quedar en blanco");
+					vacios++;
+					campo = "email";
+					continuar = false;
+				}
+				if (opcion==2) {
+					if ((document.getElementById("nombre").value=="" || document.getElementById("nombre").value==undefined) && vacios == 0) {
+						alert("El campo nombre no puede quedar en blanco");
+						vacios++;
+						campo = "nombre";
+					}
+				}
+				if ((document.getElementById("clave").value=="" || document.getElementById("clave").value==undefined) && vacios == 0) {
+					alert("El campo Password no puede quedar en blanco");
+					vacios++;
+					campo = "clave";
+				}
+				if (opcion==2) {
+					if ((document.getElementById("confirmacion").value=="" || document.getElementById("confirmacion").value==undefined) && vacios == 0) {
+						alert("El campo confirmación no puede quedar en blanco");
+						vacios++;
+						campo = "confirmacion";
+					}
+					if ((document.getElementById("question").value=="" || document.getElementById("question").value==undefined) && vacios == 0) {
+						alert("El campo pregunta no puede quedar en blanco");
+						vacios++;
+						campo = "question";
+					}
+					if ((document.getElementById("answer").value=="" || document.getElementById("answer").value==undefined) && vacios == 0) {
+						alert("El campo respuesta no puede quedar en blanco");
+						vacios++;
+						campo = "answer";
+					}
+				}
+				if (vacios>0) { continuar = false; }
+				if (continuar) {
+					usuario = document.getElementById("email").value;
+					nombre  = document.getElementById("nombre").value;
+					clave = document.getElementById("clave").value.toLowerCase();
+					question = document.getElementById("question").value;
+					answer = document.getElementById("answer").value.toLowerCase();
+				} else {
+					document.getElementById(campo).focus();
+				}
+				return continuar;
+			}
+
+			function limpiar() {
+				inicio();
+				document.getElementById("email").disabled = false;
+				document.getElementById("email").value = "";
+				document.getElementById("email").focus();
+			}
+		</script>
+	</body>
+</html>
