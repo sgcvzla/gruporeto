@@ -11,17 +11,21 @@ foreach ($valores["confirmar"] as $confirmar => $transaccion) {
   $query = 'SELECT * FROM reportepago WHERE id='.$transaccion;
   $result = mysql_query($query, $link);
   $monto = 0.00;
+  $fechacita = "0000-00-00";
+  $horacita = "00:00";
   $flagerror = false;
   if ($row = mysql_fetch_array($result)) {
-    $monto = $row['monto'];
+    $monto        = $row['monto'];
     $fechareporte = $row['fechareporte'];
-    $email = $row['email'];
-    $nombre = $row['nombredepositante'];
-    $concepto = $row['concepto'];
+    $email        = $row['email'];
+    $nombre       = $row['nombredepositante'];
+    $concepto     = $row['concepto'];
+    $fechacita    = $row['fechacita'];
+    $horacita     = $row['horacita'];
 
     $query = 'UPDATE reportepago SET status="Confirmado" WHERE id='.$transaccion;
     $result = mysql_query($query, $link);
-    confirmacionemail($email,$nombre,$fechareporte,$concepto);
+    confirmacionemail($email,$nombre,$fechareporte,$concepto,$fechacita,$horacita);
     $flagerror = false;
   } else {
     $flagerror = true;
@@ -60,8 +64,11 @@ if ($errores>0) {
 echo $respuesta;
 
 
-function confirmacionemail($correo,$nombre,$fechareporte,$concepto) {
-$fecha1 = substr($fechareporte,8,2).'/'.substr($fechareporte,5,2).'/'.substr($fechareporte,0,4);
+function confirmacionemail($correo,$nombre,$fechareporte,$concepto,$fechacita,$horacita) {
+$fecha1    = substr($fechareporte,8,2).'/'.substr($fechareporte,5,2).'/'.substr($fechareporte,0,4);
+$fechacita = substr($fechacita,8,2).'/'.substr($fechacita,5,2).'/'.substr($fechacita,0,4);
+$horacita  = substr($horacita,0,5);
+// Su solicitud está siendo procesada y se le notificará la fecha de su cita a la brevedad posible
 $mensaje = 
 '<!DOCTYPE html>
 <html>
@@ -89,7 +96,7 @@ $mensaje =
               
             <p>Servicio solicitado: <b>'.$concepto.'</b></p>
             
-            <p>Su solicitud está siendo procesada y se le notificará la fecha de su cita a la brevedad posible.</p>
+            <p><b>Se ha agendado una cita con nuestro equipo para el '.$fechacita.' a las '.$horacita.' horas.</b></p>
 
             <p><i>¡Gracias por confiar en nosotros!</i></p>
 

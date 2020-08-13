@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, scalable=yes"> -->
-		<title>POP CLIK</title>
+		<title>GRUPO RETO</title>
 		<link rel="stylesheet" href="../css/confirmacionpago.css">
 		<script type="text/javascript" src="../js/funciones.js"></script>
 	</head>
@@ -16,7 +16,7 @@
 			</div>
 			<h2 style="text-align: center; color: black;">Administración</h2>
 			<h3 align="center">Reportes de pago esperando confirmación</h3>
-			<h4 align="center" style="color: red;">(Haga doble click en la linea para ver las notas)</h4>
+			<h4 align="center" style="color: red;">(Haga doble click en la linea para ver las notas y asignar cita)</h4>
 			<br/>
 			<div id="tabla" class="tabla">
 				<div id="f-t" class="fila titulo">
@@ -281,8 +281,64 @@
 					notas.maxLength = 500;
 					notas.classList.add("textonotas");
 					notas.value = transacciones[i].nota;
+
+					cita = document.createElement("div");
+					cita.style.width = '39%';
+					cita.style.display = 'flex';
+					cita.style.margin = '0 auto';
+					cita.style.justifyContent = 'center';
+					// label fecha cita
+					txtfecha = document.createTextNode("Fecha cita:");
+					titfecha = document.createElement("div");
+					titfecha.classList.add("labelnotas");
+					titfecha.style.margin = '10px 10px auto';
+					titfecha.appendChild(txtfecha);
+					// fecha
+					var f = new Date(), yy, m, mm, d, dd, hh, mn;
+					yy = f.getFullYear();
+					m = f.getMonth();
+					m++;
+					if (m<10) { mm = "0"+m; } else { mm = m; }
+					d = f.getDate();
+					if (d<10) { dd = "0"+d; } else { dd = d; }
+					hh = f.getHours();
+					mn = f.getMinutes();
+
+					fecha = document.createElement("input");
+					fecha.id = 'fecha-'+transacciones[i].id;
+					fecha.type = 'date';
+					fecha.min = yy+"-"+mm+"-"+dd;
+					fecha.classList.add("fecha");
+					if (transacciones[i].fechacita=="0000-00-00") {
+						fecha.value = yy+"-"+mm+"-"+dd;
+					} else {
+						fecha.value = transacciones[i].fechacita;
+					}
+					// label hora cita
+					txthora = document.createTextNode("Hora cita:");
+					tithora = document.createElement("div");
+					tithora.classList.add("labelnotas");
+					tithora.style.margin = '10px 10px auto';
+					tithora.appendChild(txthora);
+					// hora cita
+					hora = document.createElement("input");
+					hora.id = 'hora-'+transacciones[i].id;
+					hora.type = 'time';
+					hora.min = '08:00';
+					hora.max = '17:00';
+					hora.classList.add("hora");
+					if (transacciones[i].horacita=="00:00:00") {
+						hora.value = hh+":"+mn;
+					} else {
+						hora.value = transacciones[i].horacita;
+					}
+					cita.appendChild(titfecha);
+					cita.appendChild(fecha);
+					cita.appendChild(tithora);
+					cita.appendChild(hora);
+
 					// notas
-					txtbtnnotas = document.createTextNode("guardar\nnota");
+					txtbtnnotas = document.createTextNode("guardar");
 					btnnotas = document.createElement("button");
 					btnnotas.id = 'btn-'+transacciones[i].id;
 					btnnotas.classList.add("btnnotas");
@@ -291,6 +347,7 @@
 
 					filanotas.appendChild(titnotas);
 					filanotas.appendChild(notas);
+					filanotas.appendChild(cita);
 					filanotas.appendChild(btnnotas);
 					filanotas.addEventListener('dblclick',  function(){ togglefilanotas(this.id) }, true);
 
@@ -316,6 +373,8 @@
 
 					datos.append("id", id);
 					datos.append("nota", document.getElementById('nota-'+id).value);
+					datos.append("fechacita", document.getElementById('fecha-'+id).value);
+					datos.append("horacita", document.getElementById('hora-'+id).value);
 
 					var xmlhttp = new XMLHttpRequest();
 					xmlhttp.onreadystatechange = function() {

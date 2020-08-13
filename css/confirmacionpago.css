@@ -118,9 +118,21 @@
 }
 
 .textonotas {
-    width: 78%;
+    width: 39%;
     height: 3.5em;
     text-align: justify;
+}
+
+.fecha {
+    width: 135px;
+    height: 1.5em;
+    margin: 0.5em 0;
+}
+
+.hora {
+    width: 120px;
+    height: 1.5em;
+    margin: 0.5em 0;
 }
 
 .btnnotas {

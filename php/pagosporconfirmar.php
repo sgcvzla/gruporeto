@@ -19,14 +19,16 @@ if ($result = mysql_query($query, $link)) {
       $coma = ",";
     }
     $respuesta .= $coma.'{';
-    $respuesta .= '"id":'.$row["id"].',';
-    $respuesta .= '"nombre":"'.$row["nombredepositante"].'"'.',';
-    $respuesta .= '"fecha":"'.$row["fechatransaccion"].'"'.',';
-    $respuesta .= '"origen":"'.$row["origen"].'"'.',';
-    $respuesta .= '"referencia":"'.$row["referencia"].'"'.',';
-    $respuesta .= '"concepto":"'.$row["concepto"].'"'.',';
-    $respuesta .= '"monto":'.$row["monto"].',';
-    $respuesta .= '"nota":"'.$row["nota"].'"';
+    $respuesta .= '"id":'         .$row["id"]               .',';
+    $respuesta .= '"nombre":"'    .$row["nombredepositante"].'"'.',';
+    $respuesta .= '"fecha":"'     .$row["fechatransaccion"] .'"'.',';
+    $respuesta .= '"origen":"'    .$row["origen"]           .'"'.',';
+    $respuesta .= '"referencia":"'.$row["referencia"]       .'"'.',';
+    $respuesta .= '"concepto":"'  .$row["concepto"]         .'"'.',';
+    $respuesta .= '"monto":'      .$row["monto"]                .',';
+    $respuesta .= '"nota":"'      .$row["nota"]             .'"'.',';
+    $respuesta .= '"fechacita":"' .$row["fechacita"]        .'"'.',';
+    $respuesta .= '"horacita":"'  .$row["horacita"]         .'"';
     $respuesta .= '}';
   }
   $respuesta .= ']';

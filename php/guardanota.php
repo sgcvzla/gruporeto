@@ -9,11 +9,11 @@ $respuesta .= '}';
 
 $exito = 'SI';
 
-$query  = 'update reportepago set nota="'.$_POST["nota"].'" where id='.$_POST["id"];
+$query  = 'update reportepago set nota="'.$_POST["nota"].'", fechacita="'.$_POST["fechacita"].'", horacita="'.$_POST["horacita"].'" where id='.$_POST["id"];
 // echo $query;
 if($result = mysql_query($query, $link)) {
   $si = 'SI';
-  $mensaje = 'Nota guardada exitosamente';
+  $mensaje = 'Registro exitoso';
 } else {
   $si = 'NO';
   $mensaje = 'Ocurrió un error';
