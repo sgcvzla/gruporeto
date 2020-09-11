@@ -76,7 +76,7 @@ $mensaje =
               <p>Monto: <b>USD '.number_format($monto,2,',','.').'</b></p>
               <p>Fecha de la transacción: <b>'.$fecha2.'</b></p>
               <p>Concepto del pago: <b>'.$concepto.'</b></p>
-              <p>Fecha seleccionada para la cita: <b>'.$fecha3.'</b></p>
+              <p>Fecha seleccionada para la cita: <b>'.$fecha3.'</b> a las <b>'.$horaCita.' horas.</b></p>
 
               <p><b>Una vez verificado el pago, recibirá un correo electrónico de confirmación.</b></p>
 
