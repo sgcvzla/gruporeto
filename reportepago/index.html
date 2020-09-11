@@ -18,7 +18,6 @@
          <h2 align="center">Reporte de pago</h2>
 			<h3 id="mensaje" align="center"></h3>
 			<div id="div1" align="center">
-
 				<div id="div2" class="cmps">
 					<span class="etiq">Correo electrónico:</span>
 					<input id="email" class="campo" type="email" size="50" maxlength="100" title="Debe introducir un formato de email válido (incluir el @ y al menos un . )" />
@@ -94,10 +93,19 @@
 			</pie>
 		</div>
 		<script>
-			let cliente="", email = "", concepto="", origen="", fecha="", referencia="", monto="", datos = new FormData();
+			let cliente="", email = "", concepto="", origen="", fecha="", referencia="", monto="", selFecha = false, fechaCita = "", horaCita = "", datos = new FormData();
 
 			function inicio() {
 				limpiar();
+
+				var params = fparamurl(window.location.search.substr(1));
+				if (params==undefined) {
+					selFecha  = false;
+				} else {
+					selFecha  = false;
+					fechaCita = params.fecha.substr(6,4)+"-"+params.fecha.substr(3,2)+"-"+params.fecha.substr(0,2);
+					horaCita  = params.hora;
+				}
 
 				var xmlhttp = new XMLHttpRequest();
 				xmlhttp.onreadystatechange = function() {
@@ -203,13 +211,16 @@
 
 			function enviar() {
 				if (validaciones()) {
-					datos.append("email", email);
-					datos.append("cliente", cliente);
-					datos.append("concepto", concepto);
-					datos.append("origen", origen);
-					datos.append("fecha", fecha);
+					datos.append("email",      email);
+					datos.append("cliente",    cliente);
+					datos.append("concepto",   concepto);
+					datos.append("origen",     origen);
+					datos.append("fecha",      fecha);
 					datos.append("referencia", referencia);
-					datos.append("monto", monto);
+					datos.append("monto",      monto);
+					datos.append("selFecha",   selFecha);
+					datos.append("fechaCita",  fechaCita);
+					datos.append("horaCita",   horaCita);
 
 					var xmlhttp = new XMLHttpRequest();
 					xmlhttp.onreadystatechange = function() {

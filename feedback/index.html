@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, scalable=yes"> -->
+		<title>GRUPO RETO</title>
+		<link rel="stylesheet" href="../css/feedback.css">
+		<script type="text/javascript" src="../js/funciones.js"></script>
+	</head>
+	<body onload="inicio()">
+		<div id="container">
+			<div class="logo" align="center">
+				<img id="logo" src="../img/gruporeto.jpg" style="width: 100%;" alt="" />
+			</div>
+			<h2 style="text-align: center; color: black;">Administración</h2>
+			<h3 align="center">Informe de feedback y disponibilidad de cita</h3>
+			<br/>
+			<div id="div1" align="center">
+				<div id="div2" class="cmps">
+					<span class="etiq" style="width: 8em; text-align: left; margin-left: 2em;">Correo cliente:</span>
+					<input id="email" class="campo" type="email" size="50" maxlength="100" title="Debe introducir un formato de email válido (incluir el @ y al menos un . )" />
+				</div>
+				<div id="div2" class="cmps">
+					<span class="etiq" style="width: 8em; text-align: left; margin-left: 2em;">Nombre cliente:</span>
+					<input id="nombre" class="campo" type="text" size="50" maxlength="100" />
+				</div>
+				<div id="div2" class="cmps">
+					<span class="etiq" style="width: 8em; text-align: left; margin-left: 2em;">Texto del feedback:</span>
+					<textarea id="feedback" cols="84" rows="10"></textarea>
+				</div>
+				<div id="div2" class="cmps">
+					<span class="etiq" style="width: 20%; margin-left: 9em;">Fecha disponible 1:</span>
+					<input id="fecha1" class="campo" type="date" size="10" />
+					<span class="etiq" style="width: 7%;">Hora:</span>
+					<input id="hora1" class="campo" type="time" size="10" />
+				</div>
+				<div id="div2" class="cmps">
+					<span class="etiq" style="width: 20%; margin-left: 9em;">Fecha disponible 2:</span>
+					<input id="fecha2" class="campo" type="date" size="10" />
+					<span class="etiq" style="width: 7%;">Hora:</span>
+					<input id="hora2" class="campo" type="time" size="10" />
+				</div>
+				<div id="div2" class="cmps">
+					<span class="etiq" style="width: 20%; margin-left: 9em;">Fecha disponible 3:</span>
+					<input id="fecha3" class="campo" type="date" size="10" />
+					<span class="etiq" style="width: 7%;">Hora:</span>
+					<input id="hora3" class="campo" type="time" size="10" />
+				</div>
+				<script>
+					let f = new Date(), yy, m, mm, d, dd, hh, mn;
+					yy = f.getFullYear();
+					m = f.getMonth();
+					m++;
+					if (m<10) { mm = "0"+m; } else { mm = m; }
+					d = f.getDate();
+					if (d<10) { dd = "0"+d; } else { dd = d; }
+					hh = f.getHours();
+					mn = f.getMinutes();
+
+					document.getElementById("fecha1").min = yy+"-"+mm+"-"+dd;
+					document.getElementById("hora1").min  = hh+"-"+mn;
+					document.getElementById("hora1").max  = '17:00';
+
+					document.getElementById("fecha2").min = yy+"-"+mm+"-"+dd;
+					document.getElementById("hora2").min  = hh+"-"+mn;
+					document.getElementById("hora2").max  = '17:00';
+
+					document.getElementById("fecha3").min = yy+"-"+mm+"-"+dd;
+					document.getElementById("hora3").min  = hh+"-"+mn;
+					document.getElementById("hora3").max  = '17:00';
+				</script>
+				<!-- Linea de botones -->
+				<div class="btns">
+					<button id="btnenviar" onclick="enviar()" style="width: 7em;">Enviar</button>
+					<button id="limpiar" onclick="limpiar()" style="width: 7em;">Limpiar</button>
+				</div>
+				<!-- 
+            <div class="btns">
+               <button id="btnvolver" style="width: 7em; margin: 0.5em 0 0 0;">Volver</button>
+				</div>
+				 -->
+         </div>
+		</div>
+		<script>
+			let respuesta, transacciones;
+
+			// Inicializa la aplicación
+			function inicio() {
+				limpiar();
+
+				// document.getElementById("btnvolver").addEventListener('click', function(){
+					// window.open("../", "_self") });
+			}
+
+			// limpia el formulario
+			function limpiar() {
+				document.getElementById("email").value = "";
+				document.getElementById("nombre").value = "";
+				document.getElementById("feedback").value = "";
+				document.getElementById("fecha1").value = yy+"-"+mm+"-"+dd;
+				document.getElementById("fecha2").value = yy+"-"+mm+"-"+dd;
+				document.getElementById("fecha3").value = yy+"-"+mm+"-"+dd;
+				document.getElementById("hora1").value  = hh+":"+mn;
+				document.getElementById("hora2").value  = hh+":"+mn;
+				document.getElementById("hora3").value  = hh+":"+mn;
+			}
+
+			// Envía los datos del formulario
+			function enviar() {
+				var datos = new FormData();
+				datos.append("email",    document.getElementById("email").value);
+				datos.append("nombre",   document.getElementById("nombre").value);
+				datos.append("feedback", document.getElementById("feedback").value);
+				datos.append("fecha1",   document.getElementById("fecha1").value);
+				datos.append("hora1",    document.getElementById("hora1").value);
+				datos.append("fecha2",   document.getElementById("fecha2").value);
+				datos.append("hora2",    document.getElementById("hora2").value);
+				datos.append("fecha3",   document.getElementById("fecha3").value);
+				datos.append("hora3",    document.getElementById("hora3").value);
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						console.log('response '+this.responseText);
+						respuesta = JSON.parse(this.responseText);
+						if (respuesta.exito == 'SI') {
+							alert(respuesta.mensaje);
+							limpiar();
+						}
+					}
+				};
+				xmlhttp.open("POST", "../php/feedback.php", true);
+				xmlhttp.send(datos);
+			}
+		</script>
+	</body>
+</html>

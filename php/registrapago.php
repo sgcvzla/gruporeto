@@ -10,23 +10,26 @@ $respuesta .= '}';
 
 $exito = 'SI';
 $fechareporte = date('Y-m-d');
-$origen = $_POST["origen"];
-$fechatransaccion = $_POST["fecha"];
+$origen            = $_POST["origen"];
+$fechatransaccion  = $_POST["fecha"];
 $nombredepositante = $_POST["cliente"];
-$monto = $_POST["monto"];
-$referencia = $_POST["referencia"];
-$status = 'Pendiente por verificar';
-$correo = $_POST["email"];
-$concepto = $_POST["concepto"];
+$monto             = $_POST["monto"];
+$referencia        = $_POST["referencia"];
+$status            = 'Pendiente por verificar';
+$correo            = $_POST["email"];
+$concepto          = $_POST["concepto"];
+$selFecha          = $_POST["selFecha"];
+$fechaCita         = $_POST["fechaCita"];
+$horaCita          = $_POST["horaCita"];
 
 $query  = 'INSERT INTO reportepago(fechareporte, origen, fechatransaccion, nombredepositante, ';
-$query .= 'monto, referencia, status, email, concepto) VALUES ("'.$fechareporte.'","'.$origen.'","';
+$query .= 'monto, referencia, status, email, concepto, fechacita, horacita) VALUES ("'.$fechareporte.'","'.$origen.'","';
 $query .= $fechatransaccion.'","'.$nombredepositante.'",'.$monto.',"'.$referencia.'","'.$status;
-$query .= '","'.$correo.'","'.$concepto.'")';
+$query .= '","'.$correo.'","'.$concepto.'","'.$fechaCita.'","'.$horaCita.'")';
 if($result = mysql_query($query, $link)) {
   $si = 'SI';
   $mensaje = 'Pago registrado exitosamente';
-  enviaremail($correo,$fechareporte,$fechatransaccion,$nombredepositante,$monto,$referencia,$origen,$concepto);
+  enviaremail($correo,$fechareporte,$fechatransaccion,$nombredepositante,$monto,$referencia,$origen,$concepto,$fechaCita,$horaCita);
 } else {
   $si = 'NO';
   $mensaje = 'Ocurrió un error en el registro de la transacción';
@@ -39,9 +42,10 @@ $respuesta .= '}';
 echo $respuesta;
 
 
-function enviaremail($correo,$fechareporte,$fechapago,$nombres,$monto,$referencia,$origen,$concepto) {
+function enviaremail($correo,$fechareporte,$fechapago,$nombres,$monto,$referencia,$origen,$concepto,$fechaCita,$horaCita) {
 $fecha1 = substr($fechareporte,8,2).'/'.substr($fechareporte,5,2).'/'.substr($fechareporte,0,4);
 $fecha2 = substr($fechapago,8,2).'/'.substr($fechapago,5,2).'/'.substr($fechapago,0,4);
+$fecha3 = substr($fechaCita,8,2).'/'.substr($fechaCita,5,2).'/'.substr($fechaCita,0,4);
 $mensaje = 
   '<!DOCTYPE html>
   <html>
@@ -52,7 +56,7 @@ $mensaje =
     <link rel="stylesheet" href="">
   </head>
   <body>
-    <table width="400" height="auto" align=""center>
+    <table width="400" height="auto" align="center">
       <tbody>
         <tr>
           <td>
@@ -72,6 +76,7 @@ $mensaje =
               <p>Monto: <b>USD '.number_format($monto,2,',','.').'</b></p>
               <p>Fecha de la transacción: <b>'.$fecha2.'</b></p>
               <p>Concepto del pago: <b>'.$concepto.'</b></p>
+              <p>Fecha seleccionada para la cita: <b>'.$fecha3.'</b></p>
 
               <p><b>Una vez verificado el pago, recibirá un correo electrónico de confirmación.</b></p>
 
