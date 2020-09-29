@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Cálculos</title>
+</head>
+<body>
+   <table>
+      <thead>
+         <tr>
+            <th>DESCRIPCION</th>
+            <th>CANTIDAD</th>
+            <th>ANCHO (pulg)</th>
+            <th>ALTO (pulg)</th>
+            <th>LARGO (M)</th>
+            <th>ML</th>
+            <th>M2</th>
+         </tr>
+      </thead>
+      <tbody id="filas">
+         <tr>
+            <td>DUCTO RECTO</td>
+            <td><input type="number" id="cant1" min="0" max="100" style="text-align: right;" onchange="calculos()" /></td>
+            <td><input type="number" id="ancho1" min="0" max="1000" style="text-align: right;" onchange="calculos()" /></td>
+            <td><input type="number" id="alto1" min="0" max="1000" style="text-align: right;" onchange="calculos()" /></td>
+            <td><input type="number" id="largo1" min="0" max="100" style="text-align: right;" onchange="calculos()" /></td>
+            <td><input type="number" id="ml1" readonly style="text-align: right;" /></td>
+            <td><input type="number" id="m21" readonly style="text-align: right;" /></td>
+         </tr>
+         <tr>
+            <td>DUCTO DE RETORNO</td>
+            <td><input type="number" id="cant2" min="0" max="100" style="text-align: right;" onchange="calculos()" /></td>
+            <td><input type="number" id="ancho2" min="0" max="1000" style="text-align: right;" onchange="calculos()" /></td>
+            <td><input type="number" id="alto2" min="0" max="1000" style="text-align: right;" onchange="calculos()" /></td>
+            <td><input type="number" id="largo2" min="0" max="100" style="text-align: right;" onchange="calculos()" /></td>
+            <td><input type="number" id="ml2" readonly style="text-align: right;" /></td>
+            <td><input type="number" id="m22" readonly style="text-align: right;" /></td>
+         </tr>
+      </tbody>
+      <tfoot>
+         <tr>
+            <td colspan="6" style="text-align: right; padding-right: 10px;">TOTAL M2</td>
+            <td><input type="number" id="totalm2" readonly style="text-align: right;" /></td>
+         </tr>
+         <tr>
+            <td colspan="6" style="text-align: right; padding-right: 10px;">TOTAL LAMINAS</td>
+            <td><input type="number" id="totallaminas" readonly style="text-align: right;" /></td>
+         </tr>
+      </tfoot>
+   </table>
+   <button onclick="agregarfila()">Agregar fila</button>
+   <script>
+      function agregarfila() {
+         fnew = filas.children.length + 1;
+
+         txt1 = document.createTextNode("OTRO DUCTO");
+         det1 = document.createElement("td");
+         inp1 = document.createElement("input");
+         inp1.id = "desc"+fnew
+         inp1.value = "Otro..."
+         // det1.appendChild(txt1);
+         det1.appendChild(inp1);
+
+         det2 = document.createElement("td");
+         inp2 = document.createElement("input");
+         inp2.type = "number";
+         inp2.id = "cant"+fnew
+         inp2.min = 0;
+         inp2.max = 100;
+         inp2.style.textAlign = "right";
+         inp2.addEventListener('change', function() { calculos() });
+         det2.appendChild(inp2);
+
+         det3 = document.createElement("td");
+         inp3 = document.createElement("input");
+         inp3.type = "number";
+         inp3.id = "ancho"+fnew
+         inp3.min = 0;
+         inp3.max = 1000;
+         inp3.style.textAlign = "right";
+         inp3.addEventListener('change', function() { calculos() });
+         det3.appendChild(inp3);
+
+         det4 = document.createElement("td");
+         inp4 = document.createElement("input");
+         inp4.type = "number";
+         inp4.id = "alto"+fnew
+         inp4.min = 0;
+         inp4.max = 1000;
+         inp4.style.textAlign = "right";
+         inp4.addEventListener('change', function() { calculos() });
+         det4.appendChild(inp4);
+
+         det5 = document.createElement("td");
+         inp5 = document.createElement("input");
+         inp5.type = "number";
+         inp5.id = "largo"+fnew
+         inp5.min = 0;
+         inp5.max = 100;
+         inp5.style.textAlign = "right";
+         inp5.addEventListener('change', function() { calculos() });
+         det5.appendChild(inp5);
+
+         det6 = document.createElement("td");
+         inp6 = document.createElement("input");
+         inp6.type = "number";
+         inp6.id = "ml"+fnew
+         inp6.readOnly = true;
+         inp6.style.textAlign = "right";
+         det6.appendChild(inp6);
+
+         det7 = document.createElement("td");
+         inp7 = document.createElement("input");
+         inp7.type = "number";
+         inp7.id = "m2"+fnew
+         inp7.readOnly = true;
+         inp7.style.textAlign = "right";
+         det7.appendChild(inp7);
+
+         filx = document.createElement("tr");
+
+         filx.appendChild(det1);
+         filx.appendChild(det2);
+         filx.appendChild(det3);
+         filx.appendChild(det4);
+         filx.appendChild(det5);
+         filx.appendChild(det6);
+         filx.appendChild(det7);
+
+         filas.appendChild(filx);
+      }
+
+      function calculos() {
+         const mm = 2;
+         const pulg = 0.0254;
+
+         for (let i = 0; i < filas.children.length; i++) {
+            xIndice = i+1;
+            xml = "ml"+xIndice;
+            xcn = "cant"+xIndice;
+            xan = "ancho"+xIndice;
+            xal = "alto"+xIndice;
+            xm2 = "m2"+xIndice;
+            xla = "largo"+xIndice;
+            document.getElementById(xml).value = Math.round((document.getElementById(xcn).value*(((Number(document.getElementById(xan).value)+mm)*mm)*pulg+((Number(document.getElementById(xal).value)+mm)*mm)*pulg))*1000)/1000;
+            document.getElementById(xm2).value = Math.round((document.getElementById(xml).value*document.getElementById(xla).value)*1000)/1000;
+            console.log(xla);
+         }
+
+         // ml1.value = Math.round((cant1.value*(((Number(ancho1.value)+mm)*mm)*pulg+((Number(alto1.value)+mm)*mm)*pulg))*1000)/1000;
+         // m21.value = Math.round((ml1.value*largo1.value)*1000)/1000;
+
+         // ml2.value = Math.round((cant2.value*(((Number(ancho2.value)+mm)*mm)*pulg+((Number(alto2.value)+mm)*mm)*pulg))*1000)/1000;
+         // m22.value = Math.round((ml2.value*largo2.value)*1000)/1000;
+         sumar();
+      }
+
+      function sumar() {
+         const m2lamina = 2.2;
+         let tmt2 = 0.000, tlam = 0.000;
+
+         for (let i = 0; i < filas.children.length; i++) {
+            xIndice = i+1;
+            xId = "m2"+xIndice;
+            tmt2 += Number(document.getElementById(xId).value);
+         }
+         totalm2.value = Math.round(tmt2*1000)/1000;
+         // totalm2.value = Math.round((Number(m21.value)+Number(m22.value))*1000)/1000;
+         totallaminas.value = Math.round((Number(totalm2.value)/m2lamina)*1000)/1000;
+      }
+   </script>
+</body>
+</html>
